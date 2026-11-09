@@ -1,0 +1,162 @@
+ClickHouse 26.10 review: results
+
+ENVIRONMENT
+  started_utc    2026-11-09 16:29:02
+  host           fedora
+  kernel         7.2.11-200.fc44.x86_64
+  cpu            AMD Ryzen 7 9700X 8-Core Processor
+  physical_cores 8
+  smt_threads    16
+  governor       performance
+  mem_total      31900272 kB
+  mem_available  19371816 kB
+  swap_total     8388604 kB
+  swap_free      19668 kB
+  podman         podman version 5.8.4
+  python         3.14.7
+  bench_sha256   28d4091ffcc020e74e5161679b2df936b10eee3ec64888e72df0a7b6aef2d444
+  server_cpus    0,8,1,9,2,10,3,11
+  client_cpus    4,12,5,13
+  server_mem     8g
+  timeout_s      120
+  rows           1000000
+  rounds         8
+  warmups        2
+  measured       10
+  images         {'clickhouse_old': 'docker.io/clickhouse/clickhouse-server:26.9.27.3 sha256:bb444bf22035cbb25755420b7aa2f0909bc157af8dd9d2af7172916d3a4ab281', 'clickhouse_new': 'docker.io/clickhouse/clickhouse-server:26.10.3.7 sha256:f4ee508b8757b1a9694ce65ed17d7c194294a2f401bcdb243aa7a65c1ca82986', 'postgres': 'docker.io/library/postgres:18.6 sha256:e923a22ac074261dd73970c57edf659475bf0497cb9456f17d98ed7cdd3ca913', 'mariadb': 'docker.io/library/mariadb:11.8.9 sha256:8a4a99eff981d95c3ab12d019b82fe59725fb7761f1f9a5f155bc3f025528f4f'}
+  ch_settings    {'clickhouse_old': {'count_distinct_implementation': 'uniqExact', 'use_query_cache': '0', 'use_query_condition_cache': '1'}, 'clickhouse_new': {'count_distinct_implementation': 'uniqExact', 'use_query_cache': '0', 'use_query_condition_cache': '1'}}
+  finished_utc   2026-11-09 17:05:11
+
+IMAGES (pinned tags and digests)
+  clickhouse_old  docker.io/clickhouse/clickhouse-server:26.9.27.3 sha256:bb444bf22035cbb25755420b7aa2f0909bc157af8dd9d2af7172916d3a4ab281
+  clickhouse_new  docker.io/clickhouse/clickhouse-server:26.10.3.7 sha256:f4ee508b8757b1a9694ce65ed17d7c194294a2f401bcdb243aa7a65c1ca82986
+  postgres        docker.io/library/postgres:18.6 sha256:e923a22ac074261dd73970c57edf659475bf0497cb9456f17d98ed7cdd3ca913
+  mariadb         docker.io/library/mariadb:11.8.9 sha256:8a4a99eff981d95c3ab12d019b82fe59725fb7761f1f9a5f155bc3f025528f4f
+
+WARM LATENCY, ms. Median of per-round medians; [min-max] over rounds; rounds used.
+  Failed, timed out or mismatching executions are excluded here and counted in 'bad'.
+
+  scenario test clickhouse_old             clickhouse_new             postgres                   mariadb                   
+  c100k    A1   24.8 [23.9-26.9] n=8       24.3 [23.9-25.6] n=8       150.6 [147.1-151.9] n=8    334.0 [313.1-384.1] n=8   
+  c100k    A2   6.1 [6.0-6.3] n=8          6.3 [6.1-6.5] n=8          24.3 [24.1-25.0] n=8       34.9 [34.3-40.7] n=8      
+  c100k    J1   11.4 [11.3-11.8] n=8       11.2 [11.0-11.7] n=8       51.8 [49.9-52.2] n=8       543.8 [537.6-552.8] n=8   
+  c1k      A1   3.4 [3.2-3.6] n=8          3.5 [3.5-3.6] n=8          30.8 [30.2-31.8] n=8       147.1 [146.4-151.1] n=8   
+  c1k      A2   2.1 [1.9-2.2] n=8          2.0 [1.8-2.1] n=8          24.0 [23.8-24.2] n=8       1.0 [0.7-1.6] n=8         
+  c1k      C1   1.8 [1.7-2.1] n=8          1.9 [1.8-2.1] n=8          22.0 [21.3-22.5] n=8       63.8 [63.3-64.2] n=8      
+  c1k      J1   6.0 [5.9-6.1] n=8          5.5 [5.4-5.8] n=8          40.5 [39.8-41.5] n=8       559.8 [547.7-564.7] n=8   
+  c1k      S1   12.7 [12.6-12.8] n=8       9.8 [9.5-10.0] n=8         21.6 [20.8-22.4] n=8       57.2 [56.3-59.6] n=8      
+  c1k      S2   12.7 [12.4-13.2] n=8       9.2 [8.9-9.4] n=8          40.4 [39.6-42.4] n=8       165.1 [164.2-167.0] n=8   
+  c1k      T1   3.3 [3.1-3.3] n=8          3.4 [3.3-3.5] n=8          25.0 [24.1-25.5] n=8       102.3 [101.9-104.7] n=8   
+  c1m      A1   281.1 [275.2-387.8] n=8    283.3 [276.4-362.4] n=8    455.7 [451.3-462.1] n=8    2772 [2732-2790] n=8      
+  c1m      A2   12.8 [12.6-13.0] n=8       12.9 [12.7-13.4] n=8       35.1 [34.9-35.4] n=8       57.0 [56.3-58.5] n=8      
+  c1m      J1   19.3 [19.0-19.6] n=8       17.7 [17.4-18.0] n=8       82.8 [81.7-89.3] n=8       621.0 [615.4-622.4] n=8   
+  sel01    S1   12.6 [12.4-12.8] n=8       9.6 [9.4-9.8] n=8          21.3 [20.9-22.0] n=8       55.9 [55.1-58.3] n=8      
+  sel01    S2   12.6 [12.3-12.9] n=8       9.0 [8.7-9.1] n=8          40.8 [39.6-41.7] n=8       165.0 [162.9-166.0] n=8   
+  sel10    S1   13.6 [13.2-13.7] n=8       10.8 [10.6-11.1] n=8       21.5 [20.8-23.0] n=8       59.0 [58.7-60.2] n=8      
+  sel10    S2   13.6 [13.4-13.8] n=8       10.4 [10.2-11.0] n=8       39.3 [38.5-40.3] n=8       164.1 [163.2-165.0] n=8   
+  skew     J1   10.7 [10.6-11.0] n=8       10.2 [9.9-10.4] n=8        48.9 [47.2-49.4] n=8       547.7 [543.6-552.4] n=8   
+
+UPGRADE RATIO (clickhouse_new / clickhouse_old, below 1 is faster)
+  Median over rounds of the per-round ratio; [min-max] over rounds; rounds paired.
+  c100k    A1   0.988 [0.886-1.016] n=8
+  c100k    A2   1.021 [1.008-1.075] n=8
+  c100k    J1   0.981 [0.950-0.995] n=8
+  c1k      A1   1.018 [0.969-1.081] n=8
+  c1k      A2   0.973 [0.867-1.126] n=8
+  c1k      C1   1.010 [0.904-1.119] n=8
+  c1k      J1   0.929 [0.916-0.950] n=8
+  c1k      S1   0.769 [0.752-0.793] n=8
+  c1k      S2   0.721 [0.698-0.741] n=8
+  c1k      T1   1.046 [1.013-1.094] n=8
+  c1m      A1   1.013 [0.723-1.317] n=8
+  c1m      A2   1.006 [0.986-1.055] n=8
+  c1m      J1   0.913 [0.889-0.948] n=8
+  sel01    S1   0.763 [0.749-0.773] n=8
+  sel01    S2   0.704 [0.689-0.732] n=8
+  sel10    S1   0.795 [0.775-0.822] n=8
+  sel10    S2   0.768 [0.753-0.818] n=8
+  skew     J1   0.950 [0.932-0.973] n=8
+
+CLICKHOUSE OWN TRACKER (not comparable to other engines): median query memory MiB / rows read
+  c100k    A1   clickhouse_new      46.0 MiB  1000000 rows
+  c100k    A1   clickhouse_old      46.5 MiB  1000000 rows
+  c100k    A2   clickhouse_new      21.9 MiB  1000000 rows
+  c100k    A2   clickhouse_old      21.9 MiB  1000000 rows
+  c100k    J1   clickhouse_new      27.0 MiB  1100000 rows
+  c100k    J1   clickhouse_old      29.4 MiB  1100000 rows
+  c1k      A1   clickhouse_new       8.5 MiB  1000000 rows
+  c1k      A1   clickhouse_old       8.5 MiB  1000000 rows
+  c1k      A2   clickhouse_new       5.2 MiB  1000000 rows
+  c1k      A2   clickhouse_old       5.3 MiB  1000000 rows
+  c1k      C1   clickhouse_new       5.2 MiB  1000000 rows
+  c1k      C1   clickhouse_old       5.2 MiB  1000000 rows
+  c1k      J1   clickhouse_new      11.3 MiB  1001000 rows
+  c1k      J1   clickhouse_old      14.5 MiB  1001000 rows
+  c1k      S1   clickhouse_new      13.8 MiB  1000000 rows
+  c1k      S1   clickhouse_old      64.1 MiB  1000000 rows
+  c1k      S2   clickhouse_new      13.8 MiB  1000000 rows
+  c1k      S2   clickhouse_old      64.1 MiB  1000000 rows
+  c1k      T1   clickhouse_new       7.8 MiB  238144 rows
+  c1k      T1   clickhouse_old       7.8 MiB  238144 rows
+  c1m      A1   clickhouse_new      71.5 MiB  1000000 rows
+  c1m      A1   clickhouse_old      70.5 MiB  1000000 rows
+  c1m      A2   clickhouse_new      75.9 MiB  1000000 rows
+  c1m      A2   clickhouse_old      75.9 MiB  1000000 rows
+  c1m      J1   clickhouse_new      76.3 MiB  2000000 rows
+  c1m      J1   clickhouse_old      76.5 MiB  2000000 rows
+  sel01    S1   clickhouse_new      13.8 MiB  1000000 rows
+  sel01    S1   clickhouse_old      64.1 MiB  1000000 rows
+  sel01    S2   clickhouse_new      13.8 MiB  1000000 rows
+  sel01    S2   clickhouse_old      64.1 MiB  1000000 rows
+  sel10    S1   clickhouse_new      17.9 MiB  1000000 rows
+  sel10    S1   clickhouse_old      64.1 MiB  1000000 rows
+  sel10    S2   clickhouse_new      17.9 MiB  1000000 rows
+  sel10    S2   clickhouse_old      64.1 MiB  1000000 rows
+  skew     J1   clickhouse_new      27.2 MiB  1100000 rows
+  skew     J1   clickhouse_old      29.4 MiB  1100000 rows
+
+T2 CONDITION CACHE DIAGNOSTIC (ClickHouse only), median ms over the window grid
+  clickhouse_new  cache_off  4.5 (n=96)
+  clickhouse_new  cache_on   4.5 (n=96)
+  clickhouse_old  cache_off  5.6 (n=96)
+  clickhouse_old  cache_on   5.5 (n=96)
+
+L1 LOAD, INDEX/LAYOUT, SETTLE (seconds) AND STORED SIZE (bytes); one observation per engine and scenario
+  c1k      clickhouse_old  load=0.582     index=0.0       settle=6.013    bytes=106670321
+  c100k    clickhouse_old  load=0.582     index=0.0       settle=6.012    bytes=108007611
+  c1m      clickhouse_old  load=0.581     index=0.0       settle=6.012    bytes=112161180
+  sel01    clickhouse_old  load=0.569     index=0.0       settle=6.026    bytes=106641797
+  sel10    clickhouse_old  load=0.594     index=0.0       settle=6.012    bytes=106457210
+  skew     clickhouse_old  load=0.634     index=0.0       settle=6.012    bytes=105884143
+  c1k      clickhouse_new  load=0.564     index=0.0       settle=6.013    bytes=106670321
+  c100k    clickhouse_new  load=0.591     index=0.0       settle=6.013    bytes=108007611
+  c1m      clickhouse_new  load=0.592     index=0.0       settle=6.012    bytes=112161180
+  sel01    clickhouse_new  load=0.601     index=0.0       settle=6.028    bytes=106641797
+  sel10    clickhouse_new  load=0.57      index=0.0       settle=6.013    bytes=106457210
+  skew     clickhouse_new  load=0.582     index=0.0       settle=6.013    bytes=105884143
+  c1k      postgres        load=0.952     index=0.308     settle=0.303    bytes=261947392
+  c100k    postgres        load=0.969     index=0.276     settle=0.312    bytes=270712832
+  c1m      postgres        load=1.329     index=0.259     settle=0.398    bytes=343801856
+  sel01    postgres        load=0.914     index=0.307     settle=0.293    bytes=261947392
+  sel10    postgres        load=0.918     index=0.294     settle=0.295    bytes=261947392
+  skew     postgres        load=0.968     index=0.286     settle=0.325    bytes=270647296
+  c1k      mariadb         load=1.98      index=0.817     settle=110.035  bytes=248414208
+  c100k    mariadb         load=2.069     index=0.82      settle=66.023   bytes=252035072
+  c1m      mariadb         load=2.659     index=0.813     settle=68.024   bytes=280395776
+  sel01    mariadb         load=1.984     index=0.831     settle=56.019   bytes=248414208
+  sel10    mariadb         load=1.969     index=0.824     settle=56.019   bytes=248414208
+  skew     mariadb         load=2.053     index=0.849     settle=58.02    bytes=252035072
+
+FAILURES AND EXCLUSIONS: 0 of 7872 recorded executions
+
+LIMITS
+  Selected analytical workloads on one machine; conclusions apply to this data, hardware and configuration.
+  Memory is the sampled peak of anonymous plus shared container memory (20 ms polling, a lower bound, page cache excluded).
+  ClickHouse query_memory is its own tracker and is not comparable to the other engines' figures.
+  First-run is the first execution after preparation or restart, not hardware-cold. OS caches were not evicted.
+  Each round restarts the server container on its persistent loaded volume; load is not repeated per round.
+  Row stores use B-tree indexes on created_at and customer_id; ClickHouse is sorted by (created_at, id).
+  The raw observations are in results.csv.
+
+RAW METADATA (JSON, used by the report command)
+{"env": {"bench_sha256": "28d4091ffcc020e74e5161679b2df936b10eee3ec64888e72df0a7b6aef2d444", "ch_settings": {"clickhouse_new": {"count_distinct_implementation": "uniqExact", "use_query_cache": "0", "use_query_condition_cache": "1"}, "clickhouse_old": {"count_distinct_implementation": "uniqExact", "use_query_cache": "0", "use_query_condition_cache": "1"}}, "client_cpus": "4,12,5,13", "cpu": "AMD Ryzen 7 9700X 8-Core Processor", "finished_utc": "2026-11-09 17:05:11", "governor": "performance", "host": "fedora", "images": {"clickhouse_new": "docker.io/clickhouse/clickhouse-server:26.10.3.7 sha256:f4ee508b8757b1a9694ce65ed17d7c194294a2f401bcdb243aa7a65c1ca82986", "clickhouse_old": "docker.io/clickhouse/clickhouse-server:26.9.27.3 sha256:bb444bf22035cbb25755420b7aa2f0909bc157af8dd9d2af7172916d3a4ab281", "mariadb": "docker.io/library/mariadb:11.8.9 sha256:8a4a99eff981d95c3ab12d019b82fe59725fb7761f1f9a5f155bc3f025528f4f", "postgres": "docker.io/library/postgres:18.6 sha256:e923a22ac074261dd73970c57edf659475bf0497cb9456f17d98ed7cdd3ca913"}, "kernel": "7.2.11-200.fc44.x86_64", "measured": 10, "mem_available": "19371816 kB", "mem_total": "31900272 kB", "physical_cores": 8, "podman": "podman version 5.8.4", "python": "3.14.7", "rounds": 8, "rows": 1000000, "server_cpus": "0,8,1,9,2,10,3,11", "server_mem": "8g", "smt_threads": 16, "started_utc": "2026-11-09 16:29:02", "swap_free": "19668 kB", "swap_total": "8388604 kB", "timeout_s": 120, "warmups": 2}, "loads": [{"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.582, "parts": 2, "scenario": "c1k", "settle_s": 6.013, "settled": true, "stored_bytes": 106670321}, {"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.582, "parts": 2, "scenario": "c100k", "settle_s": 6.012, "settled": true, "stored_bytes": 108007611}, {"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.581, "parts": 2, "scenario": "c1m", "settle_s": 6.012, "settled": true, "stored_bytes": 112161180}, {"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.569, "parts": 2, "scenario": "sel01", "settle_s": 6.026, "settled": true, "stored_bytes": 106641797}, {"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.594, "parts": 2, "scenario": "sel10", "settle_s": 6.012, "settled": true, "stored_bytes": 106457210}, {"engine": "clickhouse_old", "index_s": 0.0, "load_s": 0.634, "parts": 2, "scenario": "skew", "settle_s": 6.012, "settled": true, "stored_bytes": 105884143}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.564, "parts": 2, "scenario": "c1k", "settle_s": 6.013, "settled": true, "stored_bytes": 106670321}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.591, "parts": 2, "scenario": "c100k", "settle_s": 6.013, "settled": true, "stored_bytes": 108007611}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.592, "parts": 2, "scenario": "c1m", "settle_s": 6.012, "settled": true, "stored_bytes": 112161180}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.601, "parts": 2, "scenario": "sel01", "settle_s": 6.028, "settled": true, "stored_bytes": 106641797}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.57, "parts": 2, "scenario": "sel10", "settle_s": 6.013, "settled": true, "stored_bytes": 106457210}, {"engine": "clickhouse_new", "index_s": 0.0, "load_s": 0.582, "parts": 2, "scenario": "skew", "settle_s": 6.013, "settled": true, "stored_bytes": 105884143}, {"engine": "postgres", "index_s": 0.308, "load_s": 0.952, "scenario": "c1k", "settle_s": 0.303, "settled": true, "stored_bytes": 261947392}, {"engine": "postgres", "index_s": 0.276, "load_s": 0.969, "scenario": "c100k", "settle_s": 0.312, "settled": true, "stored_bytes": 270712832}, {"engine": "postgres", "index_s": 0.259, "load_s": 1.329, "scenario": "c1m", "settle_s": 0.398, "settled": true, "stored_bytes": 343801856}, {"engine": "postgres", "index_s": 0.307, "load_s": 0.914, "scenario": "sel01", "settle_s": 0.293, "settled": true, "stored_bytes": 261947392}, {"engine": "postgres", "index_s": 0.294, "load_s": 0.918, "scenario": "sel10", "settle_s": 0.295, "settled": true, "stored_bytes": 261947392}, {"engine": "postgres", "index_s": 0.286, "load_s": 0.968, "scenario": "skew", "settle_s": 0.325, "settled": true, "stored_bytes": 270647296}, {"engine": "mariadb", "index_s": 0.817, "load_s": 1.98, "scenario": "c1k", "settle_s": 110.035, "settled": true, "stored_bytes": 248414208}, {"engine": "mariadb", "index_s": 0.82, "load_s": 2.069, "scenario": "c100k", "settle_s": 66.023, "settled": true, "stored_bytes": 252035072}, {"engine": "mariadb", "index_s": 0.813, "load_s": 2.659, "scenario": "c1m", "settle_s": 68.024, "settled": true, "stored_bytes": 280395776}, {"engine": "mariadb", "index_s": 0.831, "load_s": 1.984, "scenario": "sel01", "settle_s": 56.019, "settled": true, "stored_bytes": 248414208}, {"engine": "mariadb", "index_s": 0.824, "load_s": 1.969, "scenario": "sel10", "settle_s": 56.019, "settled": true, "stored_bytes": 248414208}, {"engine": "mariadb", "index_s": 0.849, "load_s": 2.053, "scenario": "skew", "settle_s": 58.02, "settled": true, "stored_bytes": 252035072}]}
