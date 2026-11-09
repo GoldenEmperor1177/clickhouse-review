@@ -106,7 +106,7 @@ The run used one desktop: AMD Ryzen 7 9700X (8 cores, 16 threads), 30 GB memory,
 | `results.txt` | Readable results, environment details, configuration and limitations |
 | `README.md` | Scope, methodology, setup instructions and review findings |
 
-The script generates temporary working data during execution and removes it afterwards. `results.txt` ends with a metadata block that the `report` command reads, and the script's own hash is recorded there.
+The script generates temporary working data during execution and removes it afterwards. `results.txt` ends with a metadata block that the `report` command reads. It also records the hash of the `bench.py` that produced the measurements, which is the version in commit `5386bba`. Later commits changed only the `report` command, not data generation, queries or measurement.
 
 ## Setup and running
 
@@ -129,7 +129,7 @@ Run the measurement. The run refuses to start if Podman already has containers, 
 venv/bin/python bench.py run --rows 1000000 --out .
 ```
 
-Useful options are `--rounds`, `--warmups`, `--measured`, `--server-cpus`, `--client-cpus` and `--server-mem`. The published run used the defaults and took about 36 minutes. A quick check of the runner is `--rows 100000 --rounds 4 --warmups 1 --measured 2`, which takes a few minutes and should not be mixed with real results. For stable timings, set the CPU governor to performance and stop other services first. `venv/bin/python bench.py report` rebuilds `results.txt` from `results.csv`.
+Useful options are `--rounds`, `--warmups`, `--measured`, `--server-cpus`, `--client-cpus` and `--server-mem`. The published run used the defaults and took about 36 minutes. A quick check of the runner is `--rows 100000 --rounds 4 --warmups 1 --measured 2`, which takes a few minutes and should not be mixed with real results. For stable timings, set the CPU governor to performance and stop other services first. `venv/bin/python bench.py report` rebuilds `results.txt` from `results.csv` in place, and regenerating the published files reproduces them byte for byte. To write elsewhere, pass `--txt OUT --meta results.txt`.
 
 ## Relationship to DB Pairs
 

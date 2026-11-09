@@ -558,6 +558,9 @@ class ReportTests(unittest.TestCase):
             cmd_report(ns)
             self.assertIn("UPGRADE RATIO", txt.read_text())
             self.assertIn("0.500 [0.500-0.500] n=2", txt.read_text())
+            first = txt.read_text()
+            cmd_report(ns)
+            self.assertEqual(txt.read_text(), first)
 
 
 def cmd_selftest(_args):
@@ -1129,7 +1132,7 @@ def write_report(results_csv, loads, env, txt_path):
               "  Each round restarts the server container on its persistent loaded volume; load is not repeated per round.",
               "  Row stores use B-tree indexes on created_at and customer_id; ClickHouse is sorted by (created_at, id).",
               "  The raw observations are in results.csv."]
-    lines += ["", META_MARK, json.dumps({"env": env, "loads": loads}, sort_keys=True)]
+    lines += ["", META_MARK, json.dumps({"env": env, "loads": loads})]
     Path(txt_path).write_text("\n".join(lines) + "\n")
 
 
@@ -1147,9 +1150,12 @@ def merge_ch_memory(csv_path, chmem):
 
 
 def cmd_report(args):
-    text = Path(args.txt).read_text()
+    src = getattr(args, "meta", None) or args.txt
+    if not Path(src).is_file():
+        raise SystemExit(f"{src} not found; pass --meta with a results.txt from a run")
+    text = Path(src).read_text()
     if META_MARK not in text:
-        raise SystemExit("no metadata block in " + args.txt)
+        raise SystemExit("no metadata block in " + src)
     meta = json.loads(text.split(META_MARK + "\n", 1)[1].strip().splitlines()[0])
     write_report(args.csv, meta["loads"], meta["env"], args.txt)
     print("wrote", args.txt)
@@ -1259,7 +1265,7 @@ def cmd_run(args):
                             h = canonical_hash(expected[sc][t])
                             results = run_cell(srv, clients[sc], sc, t, h, rd["round"], pos, args, writer, qbase)
                             if srv.family == "clickhouse":
-                                for qid, phase, i, r in results:
+                                for qid, phase, i, _r in results:
                                     pending[qid] = (sc, t, phase, i)
                         if srv.family == "clickhouse":
                             run_t2(srv, clients["c1k"], "c1k", t2expected["c1k"], rd["round"], pos, args, writer, qbase)
@@ -1317,6 +1323,7 @@ def main():
     rp = sub.add_parser("report")
     rp.add_argument("--csv", default=str(HERE / "results.csv"))
     rp.add_argument("--txt", default=str(HERE / "results.txt"))
+    rp.add_argument("--meta", help="results.txt to read run metadata from (default: --txt)")
     args = p.parse_args()
     return {"selftest": cmd_selftest, "plan": cmd_plan, "generate": cmd_generate,
             "run": cmd_run, "report": cmd_report}[args.command](args) or 0
