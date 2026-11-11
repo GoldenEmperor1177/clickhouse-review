@@ -105,6 +105,7 @@ The run used one desktop: AMD Ryzen 7 9700X (8 cores, 16 threads), 30 GB memory,
 | `results.csv` | Raw measurements from each engine, scenario, test, round and run |
 | `results.txt` | Readable results, environment details, configuration and limitations |
 | `README.md` | Scope, methodology, setup instructions and review findings |
+| `LICENSE` | MIT license |
 
 The script generates temporary working data during execution and removes it afterwards. `results.txt` ends with a metadata block that the `report` command reads. It also records the hash of the `bench.py` that produced the measurements, which is the version in commit `5386bba`. Later commits changed only the `report` command, not data generation, queries or measurement.
 
